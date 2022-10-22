@@ -18,6 +18,7 @@ local core = {}
 -- @local
 local new_repl = {}
 
+local codewin = 0
 --- Create a new repl on the current window
 -- Simple wrapper around the low level functions
 -- Useful to avoid rewriting the get_def + create + save pattern
@@ -36,7 +37,10 @@ new_repl.create = function(ft, bufnr, cleanup)
 
   success, meta = pcall(ll.create_repl_on_current_window, ft, repl, bufnr)
   if success then
+    local currwin = vim.api.nvim_get_current_win()
+    vim.api.nvim_set_current_win(codewin)
     ll.set(ft, meta)
+    vim.api.nvim_set_current_win(currwin)
     return meta
   elseif cleanup ~= nil then
     cleanup()
@@ -51,6 +55,7 @@ end
 -- @param ft filetype
 -- @return saved snapshot of repl metadata
 new_repl.create_on_new_window = function(ft)
+  codewin = vim.api.nvim_get_current_win()
   local bufnr = ll.new_buffer()
   local replwin = ll.new_window(bufnr)
 

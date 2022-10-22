@@ -23,6 +23,19 @@ scope.tab_based = {
   end
 }
 
+scope.file_based = {
+  set = function(memory, ft, repl_data)
+    local fname = vim.fn.expand('%:p')
+    default_map_set(memory, ft, fname, repl_data)
+    return repl_data
+  end,
+  get = function(memory, ft)
+    ensure_key(memory, ft)
+    local fname = vim.fn.expand('%:p')
+    return memory[ft][fname]
+  end
+}
+
 scope.path_based = {
   set = function(memory, ft, repl_data)
     local pwd = vim.fn.getcwd()
